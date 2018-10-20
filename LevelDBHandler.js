@@ -5,9 +5,10 @@
 // Importing the module 'level'
 const level = require('level');
 // Declaring the folder path that store the data
-const chainDB = './chaindata';
+const chainDB = './chainDB';
 // Declaring a class
-class LevelHandler {
+
+class LevelDBHandler {
 	// Declaring the class constructor
     constructor() {
     	this.db = level(chainDB);
@@ -16,7 +17,7 @@ class LevelHandler {
   	// Get data from levelDB with key (Promise)
   	getLevelDBData(key){
         let self = this; // because we are returning a promise we will need this to be able to reference 'this' inside the Promise constructor
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject)=>{
             self.db.get(key, (err, value) => {
                 if(err){
                     if (err.type == 'NotFoundError') {
@@ -35,8 +36,8 @@ class LevelHandler {
   	// Add data to levelDB with key and value (Promise)
     addLevelDBData(key, value) {
         let self = this;
-        return new Promise(function(resolve, reject) {
-            self.db.put(key, value, function(err) {
+        return new Promise((resolve, reject)=>{
+            self.db.put(key, value, (err)=>{
                 if (err) {
                     console.log('Block ' + key + ' submission failed', err);
                     reject(err);
@@ -45,14 +46,31 @@ class LevelHandler {
             });
         });
     }
-  
-  	// Implement this method
-    getBlocksCount() {
-        let self = this;
-        // Add your code here
-      	
-      }
+    
+    //Get the count the number of the whole levelDB
+    getDBCounter(){
+    let counter = 0;
+    let self = this;
+    return new Promise((resolve,reject)=>{
+        self.db.createReadStream()
+        .on('data',(data)=>{
+            //console.log(data.key + '=' + data.value);
+            counter++;
+        })
+        .on('error',(err)=>{
+            console.log('Oh my!', err);
+            reject(err);
+        })
+        .on('close',()=>{
+            //console.log('Stream closed');
+        })
+        .on('end',()=>{
+            //console.log('Stream ended');
+            resolve(counter);
+        })
+    });
+}
 }
 
 // Export the class
-module.exports.LevelSandbox = LevelHandler;
+module.exports = LevelDBHandler;
