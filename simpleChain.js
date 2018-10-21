@@ -123,44 +123,48 @@ class Blockchain{
 
   // Validate blockchain
   validateChain(){
-    this.getBlockHeight().then(height=>{
-      let errlog = [];
-
-      for(let i=0;i<=height-1;i++){
-        
-        //validate each block in the chain first
-        this.validateBlock(i).then(validation=>{
-          if(!validation) errlog.push(i);
-        });
-
-        //validate the whole chain
-        if(i>0){
-          this.getBlock(i).then(blockStr=>{
-            let currentPreBlockHash = JSON.parse(blockStr).previousBlockHash;
-            this.getBlock(i-1).then(preBlockStr=>{
-              let preBlockHash = JSON.parse(preBlockStr).hash;
-
-              //make some err for invalid test
-              // if(i===3){
-              //   currentPreBlockHash = 'invalidTest.';
-              // }
-
-              //compare the block.previousBlockHash to previousBlock.hash
-              if(currentPreBlockHash !== preBlockHash){
-                console.log('Block #' + i + ' invalid :\n' + currentPreBlockHash + '<>' + preBlockHash);
-                errlog.push(i);
-              }
-
-              if (errlog.length > 0) {
-                console.log('Block errors = ' + errlog.length);
-                console.log('Blocks: ' + errlog);
-              } else {
-                console.log('No errors detected');
-              }
-            })
+    return new Promise((resolve,reject)=>{
+      this.getBlockHeight().then(height=>{
+        let errlog = [];
+  
+        for(let i=0;i<=height-1;i++){
+          
+          //validate each block in the chain first
+          this.validateBlock(i).then(validation=>{
+            if(!validation) errlog.push(i);
           });
+  
+          //validate the whole chain
+          if(i>0){
+            this.getBlock(i).then(blockStr=>{
+              let currentPreBlockHash = JSON.parse(blockStr).previousBlockHash;
+              this.getBlock(i-1).then(preBlockStr=>{
+                let preBlockHash = JSON.parse(preBlockStr).hash;
+  
+                //make some error for invalid test
+                // if(i===3||i==2){
+                //   currentPreBlockHash = 'invalidTest';
+                // }
+  
+                //compare the block.previousBlockHash to previousBlock.hash
+                if(currentPreBlockHash !== preBlockHash){
+                  console.log('Block #' + i + ' invalid :\n' + currentPreBlockHash + '<>' + preBlockHash);
+                  errlog.push(i);
+                }
+  
+                if(i === (height-1)){
+                  if (errlog.length > 0) {
+                    console.log('err found');
+                    reject(false);
+                  } else {
+                    resolve(true);
+                  }
+                }
+              })
+            });
+          }
         }
-      }
+      });
     });
   }
 }
@@ -185,4 +189,8 @@ let myBlockChain = new Blockchain();
 // myBlockChain.validateBlock(2).then((validation)=>{
 //   console.log(validation)
 // })
-myBlockChain.validateChain();
+myBlockChain.validateChain().then(response=>{
+  if(response){console.log('Blockchain validated success.')}
+}).catch(err=>{
+  if(err===false){console.log('Blockchain validated failed.')}
+});
