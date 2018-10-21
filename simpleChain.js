@@ -39,39 +39,47 @@ class Blockchain{
   //to create the Genesis Block
   createGenesisBlock(){
     let GenesisBlock = new Block("There should be light. - Genesis Block");
-    this.chainDB.addLevelDBData('0',JSON.stringify(GenesisBlock).toString())
-    console.log('Genesis Block Created.');
+    this.chainDB.addLevelDBData(0,JSON.stringify(GenesisBlock).toString()).then((Block)=>{
+      console.log('Genesis Block Created.');
+      console.log(Block);
+    });
   }
 
   // Add new block
   addBlock(newBlock){
       return new Promise((resolve,reject)=>{
 
-        this.getBlockHeight().then((height)=>{
+        this.getBlockHeight().then((chainHeight)=>{
 
-          //assign height
-          newBlock.height = height+1;
-
-          //assign preBlockHash
-          if(height>0){
-            this.getBlock(height-1).then((preBlock)=>{
-              //let preBlock = JSON.parse(preBlockString);
-              newBlock.previousBlockHash = preBlock.hash;
-            });
+          if(chainHeight==0){
+            //create the Genesis Block
+            this.createGenesisBlock();
+            reject(chainHeight)
           }
 
+          //assign height
+          newBlock.height = chainHeight;
+          console.log("!! newBlock.height: "+newBlock.height)
+
+          //assign preBlockHash
+          if(chainHeight>0){
+            this.getBlock(chainHeight-1).then((preBlockString)=>{
+              let preBlock = JSON.parse(preBlockString);
+              newBlock.previousBlockHash = preBlock.hash;
+
+              //assign UTC timestamp
+              newBlock.time = new Date().getTime().toString().slice(0,-3);
+
+              // Block hash with SHA256 using newBlock and converting to a string
+              //Warning!! this line must run when the block data prepared.
+              newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
+
+              //add to blockchain databse
+              this.chainDB.addLevelDBData(newBlock.height,JSON.stringify(newBlock).toString());
+              resolve(newBlock);
+              });
+          }
         });
-      
-        //assign UTC timestamp
-        newBlock.time = new Date().getTime().toString().slice(0,-3);
-
-        // Block hash with SHA256 using newBlock and converting to a string
-        //Warning!! this line must run when the block data prepared.
-        newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
-
-        //add to blockchain databse
-        this.chainDB.addLevelDBData(newBlock.height,newBlock);
-        resolve(newBlock);
       });
     }
 
@@ -127,12 +135,18 @@ class Blockchain{
 }
 
 let myChain = new Blockchain();
-// myChain.addBlock(new Block('love')).then((Block)=>{
-//   console.log(Block);
+// myChain.addBlock(new Block('Love')).then((newBlock)=>{
+//   console.log(newBlock);
 // });
-// myChain.addBlock(new Block('peace')).then((Block)=>{
-//   console.log(Block);
-// });
-// myChain.addBlock(new Block('freedom')).then((Block)=>{
-//   console.log(Block);
-// });
+
+(function theLoop (i) {
+  setTimeout(() => {
+    myChain.addBlock(new Block(`Test data ${i}`)).then(() => {
+      if (--i) {
+        theLoop(i)
+      }
+    })
+  }, 100);
+})(10);
+
+setTimeout(() => blockchain.validateChain(), 2000)

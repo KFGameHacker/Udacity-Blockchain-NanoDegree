@@ -76,11 +76,11 @@ function getDBCounter(){
     });
 }
 
-//addData('1','kevin');
-//addData('2','barlow');
+// addData(1,'kevin');
+// addData(2,'barlow');
 // getData('1').then((value)=>{console.log(value)});
 // getData('2').then((value)=>{console.log(value)});
 // addData('3','kk');
 // addData('4','sdfs');
 // addData('5','baetetrerlow');
-getDBCounter().then((height)=>{console.log("chainDB height = " + height)})
+getDBCounter().then((height)=>{console.log("---- chainDB height = " + height + " ---")})
