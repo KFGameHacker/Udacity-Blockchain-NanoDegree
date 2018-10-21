@@ -43,7 +43,7 @@ class Blockchain{
     GenesisBlock.hash = SHA256(JSON.stringify(GenesisBlock)).toString();
     this.chainDB.addLevelDBData(0,JSON.stringify(GenesisBlock).toString()).then((Block)=>{
       console.log('Genesis Block Created.');
-      console.log(Block);
+      console.log(GenesisBlock);
     });
   }
 
@@ -151,6 +151,8 @@ class Blockchain{
                   console.log('Block #' + i + ' invalid :\n' + currentPreBlockHash + '<>' + preBlockHash);
                   errlog.push(i);
                 }
+
+                console.log('Block #'+i+" validated.")
   
                 if(i === (height-1)){
                   if (errlog.length > 0) {
@@ -182,13 +184,10 @@ let myBlockChain = new Blockchain();
 //       }).catch(err=>{
 //         console.log(err);
 //       });
-//   }, 5000);
+//   }, 1000);
 // })(0);
 
-//setTimeout(() => myBlockChain.validateChain(), 2000)
-// myBlockChain.validateBlock(2).then((validation)=>{
-//   console.log(validation)
-// })
+
 myBlockChain.validateChain().then(response=>{
   if(response){console.log('Blockchain validated success.')}
 }).catch(err=>{
