@@ -48,7 +48,7 @@ class Blockchain{
   }
 
   // Add new block
-  async addBlock(newBlock){
+  addBlock(newBlock){
       return new Promise((resolve,reject)=>{
 
         this.getBlockHeight().then((chainHeight)=>{
@@ -96,22 +96,27 @@ class Blockchain{
 
   // validate block
   validateBlock(blockHeight){
-    // get block object
-    let block = this.getBlock(blockHeight);
+    return new Promise((resolve,reject)=>{
+      // get block object
+    this.getBlock(blockHeight).then(function (response) {
+
+    let block = JSON.parse(response);
     // get block hash
     let blockHash = block.hash;
-    // remove block hash to test block integrity
     block.hash = '';
-    // generate block hash
     let validBlockHash = SHA256(JSON.stringify(block)).toString();
+
     // Compare
-    if (blockHash===validBlockHash) {
-        return true;
-      } else {
-        console.log('Block #'+blockHeight+' invalid hash:\n'+blockHash+'<>'+validBlockHash);
-        return false;
-      }
-  }
+    if (blockHash === validBlockHash) {
+      console.log('Block #' + blockHeight + ' validated. \nhash:\n' + blockHash + '\n==\n' + validBlockHash);
+      resolve(true);
+    } else {
+      console.log('Block #' + blockHeight + ' invalid hash:\n' + blockHash + '<>' + validBlockHash);
+      reject(false);
+    }
+    });
+  });
+}
 
   // Validate blockchain
   validateChain(){
@@ -138,17 +143,20 @@ class Blockchain{
 //Test Case
 let myBlockChain = new Blockchain();
 
-(function theLoop (i) {
-  setTimeout(function () {
-      let blockTest = new Block("Test Block - " + (i + 1));
-      myBlockChain.addBlock(blockTest).then((result) => {
-          console.log(result);
-          i++;
-          if (i < 10) theLoop(i);
-      }).catch(err=>{
-        console.log(err);
-      });
-  }, 5000);
-})(0);
+// (function theLoop (i) {
+//   setTimeout(function () {
+//       let blockTest = new Block("Test Block - " + (i + 1));
+//       myBlockChain.addBlock(blockTest).then((result) => {
+//           console.log(result);
+//           i++;
+//           if (i < 10) theLoop(i);
+//       }).catch(err=>{
+//         console.log(err);
+//       });
+//   }, 5000);
+// })(0);
 
 //setTimeout(() => blockchain.validateChain(), 2000)
+myBlockChain.validateBlock(2).then((validation)=>{
+  console.log(validation)
+})
