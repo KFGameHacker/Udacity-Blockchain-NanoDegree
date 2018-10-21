@@ -1,31 +1,5 @@
 var level = require('level')
-
-// 1) Create our database, supply location and options.
-//    This will create or open the underlying LevelDB store.
 const db = level('./chainDB')
-
-// 2) Put a key & value
-// db.put('name', 'Level', function (err) {
-//   if (err) return console.log('Ooops!', err) // some kind of I/O error
-
-//   // 3) Fetch by key
-//   db.get('name', function (err, value) {
-//     if (err) return console.log('Ooops!', err) // likely the key was not found
-
-//     // Ta da!
-//     console.log('name=' + value)
-//   })
-// })
-
-// db.put('kevin','awesome',function(err){
-//   if(err) return console.log('wrong',err);
-//   console.log('Input DB success.');
-// })
-
-// db.get('kevin',function(err,value){
-//   if(err) return console.log('wrong',err);
-//   console.log('kevin:' + value);
-// }) 
 
 function addData(key,value){
     let self = this;
@@ -76,11 +50,4 @@ function getDBCounter(){
     });
 }
 
-// addData(1,'kevin');
-// addData(2,'barlow');
-// getData('1').then((value)=>{console.log(value)});
-// getData('2').then((value)=>{console.log(value)});
-// addData('3','kk');
-// addData('4','sdfs');
-// addData('5','baetetrerlow');
 getDBCounter().then((height)=>{console.log("---- chainDB height = " + height + " ---")})
