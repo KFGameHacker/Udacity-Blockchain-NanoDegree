@@ -108,7 +108,7 @@ class Blockchain{
 
     // Compare
     if (blockHash === validBlockHash) {
-      console.log('Block #' + blockHeight + ' validated. \nhash:\n' + blockHash + '\n==\n' + validBlockHash);
+      //console.log('Block #' + blockHeight + ' validated. \nhash:\n' + blockHash + '\n==\n' + validBlockHash);
       resolve(true);
     } else {
       console.log('Block #' + blockHeight + ' invalid hash:\n' + blockHash + '<>' + validBlockHash);
@@ -123,28 +123,44 @@ class Blockchain{
 
   // Validate blockchain
   validateChain(){
-    let errorLog = [];
-    let validQueue = [];
-    this.getBlockHeight().then(blockHeight=>{
+    this.getBlockHeight().then(height=>{
+      let errlog = [];
 
-      for(let i=0;i<=blockHeight-1;i++){
-
-        this.getBlock(i).then(blockStr=>{
-
-          let block = JSON.parse(blockStr);
-          validQueue.push(this.validateBlock(i));
-
-        }).catch(err=>{
-          errorLog.push(err);
-          console.log(err);
+      for(let i=0;i<=height-1;i++){
+        
+        //validate each block in the chain first
+        this.validateBlock(i).then(validation=>{
+          if(!validation) errlog.push(i);
         });
-      }
 
-      Promise.all(validQueue).then(result=>{
-        console.log('Valid Queue validated.' + result);
-      }).catch(err=>{
-        console.log(err);
-      })
+        //validate the whole chain
+        if(i>0){
+          this.getBlock(i).then(blockStr=>{
+            let currentPreBlockHash = JSON.parse(blockStr).previousBlockHash;
+            this.getBlock(i-1).then(preBlockStr=>{
+              let preBlockHash = JSON.parse(preBlockStr).hash;
+
+              //make some err for invalid test
+              // if(i===3){
+              //   currentPreBlockHash = 'invalidTest.';
+              // }
+
+              //compare the block.previousBlockHash to previousBlock.hash
+              if(currentPreBlockHash !== preBlockHash){
+                console.log('Block #' + i + ' invalid :\n' + currentPreBlockHash + '<>' + preBlockHash);
+                errlog.push(i);
+              }
+
+              if (errlog.length > 0) {
+                console.log('Block errors = ' + errlog.length);
+                console.log('Blocks: ' + errlog);
+              } else {
+                console.log('No errors detected');
+              }
+            })
+          });
+        }
+      }
     });
   }
 }
@@ -169,4 +185,4 @@ let myBlockChain = new Blockchain();
 // myBlockChain.validateBlock(2).then((validation)=>{
 //   console.log(validation)
 // })
-myBlockChain.validateChain()
+myBlockChain.validateChain();
