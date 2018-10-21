@@ -114,6 +114,9 @@ class Blockchain{
       console.log('Block #' + blockHeight + ' invalid hash:\n' + blockHash + '<>' + validBlockHash);
       reject(false);
     }
+    }).catch(err=>{
+      console.log('Get Block #'+blockHeight+' err:'+err);
+      reject(err);
     });
   });
 }
@@ -121,22 +124,28 @@ class Blockchain{
   // Validate blockchain
   validateChain(){
     let errorLog = [];
-    for (var i = 0; i < this.chain.length-1; i++) {
-      // validate block
-      if (!this.validateBlock(i))errorLog.push(i);
-      // compare blocks hash link
-      let blockHash = this.chain[i].hash;
-      let previousHash = this.chain[i+1].previousBlockHash;
-      if (blockHash!==previousHash) {
-        errorLog.push(i);
+    let validQueue = [];
+    this.getBlockHeight().then(blockHeight=>{
+
+      for(let i=0;i<=blockHeight-1;i++){
+
+        this.getBlock(i).then(blockStr=>{
+
+          let block = JSON.parse(blockStr);
+          validQueue.push(this.validateBlock(i));
+
+        }).catch(err=>{
+          errorLog.push(err);
+          console.log(err);
+        });
       }
-    }
-    if (errorLog.length>0) {
-      console.log('Block errors = ' + errorLog.length);
-      console.log('Blocks: '+errorLog);
-    } else {
-      console.log('No errors detected');
-    }
+
+      Promise.all(validQueue).then(result=>{
+        console.log('Valid Queue validated.' + result);
+      }).catch(err=>{
+        console.log(err);
+      })
+    });
   }
 }
 
@@ -156,7 +165,8 @@ let myBlockChain = new Blockchain();
 //   }, 5000);
 // })(0);
 
-//setTimeout(() => blockchain.validateChain(), 2000)
-myBlockChain.validateBlock(2).then((validation)=>{
-  console.log(validation)
-})
+//setTimeout(() => myBlockChain.validateChain(), 2000)
+// myBlockChain.validateBlock(2).then((validation)=>{
+//   console.log(validation)
+// })
+myBlockChain.validateChain()
