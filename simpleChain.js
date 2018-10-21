@@ -39,6 +39,8 @@ class Blockchain{
   //to create the Genesis Block
   createGenesisBlock(){
     let GenesisBlock = new Block("There should be light. - Genesis Block");
+    GenesisBlock.time = new Date().getTime().toString().slice(0, -3);
+    GenesisBlock.hash = SHA256(JSON.stringify(GenesisBlock)).toString();
     this.chainDB.addLevelDBData(0,JSON.stringify(GenesisBlock).toString()).then((Block)=>{
       console.log('Genesis Block Created.');
       console.log(Block);
@@ -46,7 +48,7 @@ class Blockchain{
   }
 
   // Add new block
-  addBlock(newBlock){
+  async addBlock(newBlock){
       return new Promise((resolve,reject)=>{
 
         this.getBlockHeight().then((chainHeight)=>{
@@ -59,7 +61,6 @@ class Blockchain{
 
           //assign height
           newBlock.height = chainHeight;
-          console.log("!! newBlock.height: "+newBlock.height)
 
           //assign preBlockHash
           if(chainHeight>0){
@@ -134,19 +135,20 @@ class Blockchain{
   }
 }
 
-let myChain = new Blockchain();
-// myChain.addBlock(new Block('Love')).then((newBlock)=>{
-//   console.log(newBlock);
-// });
+//Test Case
+let myBlockChain = new Blockchain();
 
 (function theLoop (i) {
-  setTimeout(() => {
-    myChain.addBlock(new Block(`Test data ${i}`)).then(() => {
-      if (--i) {
-        theLoop(i)
-      }
-    })
-  }, 100);
-})(10);
+  setTimeout(function () {
+      let blockTest = new Block("Test Block - " + (i + 1));
+      myBlockChain.addBlock(blockTest).then((result) => {
+          console.log(result);
+          i++;
+          if (i < 10) theLoop(i);
+      }).catch(err=>{
+        console.log(err);
+      });
+  }, 5000);
+})(0);
 
-setTimeout(() => blockchain.validateChain(), 2000)
+//setTimeout(() => blockchain.validateChain(), 2000)
