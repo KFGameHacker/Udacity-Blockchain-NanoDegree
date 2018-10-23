@@ -3,21 +3,8 @@
 |  =========================================================*/
 
 const SHA256 = require('crypto-js/sha256');
-const LevelDBHandler = require('./LevelDBHandler')
-
-/* ===== Block Class ==============================
-|  Class with a constructor for block 			   |
-|  ===============================================*/
-
-class Block{
-	constructor(data){
-     this.hash = "",
-     this.height = 0,
-     this.body = data,
-     this.time = 0,
-     this.previousBlockHash = ""
-    }
-}
+const LevelDBHandler = require('./LevelDBHandler');
+const Block = require('./Block');
 
 /* ===== Blockchain Class ==========================
 |  Class with a constructor for new blockchain 		|
@@ -174,6 +161,7 @@ class Blockchain{
 //Test Case
 let myBlockChain = new Blockchain();
 
+//add blocks
 // (function theLoop (i) {
 //   setTimeout(function () {
 //       let blockTest = new Block("Test Block - " + (i + 1));
@@ -187,9 +175,12 @@ let myBlockChain = new Blockchain();
 //   }, 1000);
 // })(0);
 
+//valiate the blockchian
+// myBlockChain.validateChain().then(response=>{
+//   if(response){console.log('Blockchain validated success.')}
+// }).catch(err=>{
+//   if(err===false){console.log('Blockchain validated failed.')}
+// });
 
-myBlockChain.validateChain().then(response=>{
-  if(response){console.log('Blockchain validated success.')}
-}).catch(err=>{
-  if(err===false){console.log('Blockchain validated failed.')}
-});
+//export the class
+module.exports = Blockchain;
