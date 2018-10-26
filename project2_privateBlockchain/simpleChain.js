@@ -10,7 +10,7 @@ const Block = require('./Block');
 |  Class with a constructor for new blockchain 		|
 |  ================================================*/
 
-class Blockchain{
+class SimpleChain{
   constructor(){
     //this.chain = [];
     this.chainDB = new LevelDBHandler();
@@ -69,7 +69,7 @@ class Blockchain{
           }
         });
       });
-    }
+  }
 
   // Get block height
   getBlockHeight(){
@@ -159,7 +159,7 @@ class Blockchain{
 }
 
 //Test Case
-let myBlockChain = new Blockchain();
+//let myBlockChain = new Blockchain();
 
 //add blocks
 // (function theLoop (i) {
@@ -183,4 +183,5 @@ let myBlockChain = new Blockchain();
 // });
 
 //export the class
-module.exports = Blockchain;
+//module.exports = this.SimpleChain;
+exports.SimpleChain = SimpleChain;
