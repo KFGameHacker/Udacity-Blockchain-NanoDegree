@@ -13,4 +13,4 @@ class Block{
 }
 
 //export the block
-module.exports = Block;
+exports.Block = Block;

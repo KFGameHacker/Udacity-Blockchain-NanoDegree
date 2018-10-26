@@ -1,3 +1,3 @@
-const BlockAPI = require('./BlockAPI.js');
+const BlockAPI = require('./BlockAPI.js').BlockAPI;
 
-new BlockAPI();
+let myAPI = new BlockAPI();

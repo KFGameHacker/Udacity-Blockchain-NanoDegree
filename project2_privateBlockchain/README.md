@@ -11,6 +11,11 @@ At the end of the project you will learn the skills needed to create your own pr
 
 ---
 
+## Node.js Framework
+```
+express
+```
+
 ## Getting Started
 
 ```
@@ -23,5 +28,36 @@ To test code:
 Open a command prompt or shell terminal after install node.js and execute:
 
 ```
-node simpleChain.js
+node app.js
 ```
+
+## Endpoint Document
+#### Add block endpoint 
+You can use this endpoint to add block into the blockchain through API.
+```
+Endpoint: /api/block
+Method:   post
+Body:
+{
+	"info":"your data here"
+}
+```
+#### Get block by index endpoint
+You can use this endpoint to get block from the blockchain by index through API.
+```
+Endpoint: /api/block/:index
+
+Example:  /api/block/12
+
+Method:   get
+
+Return Data Example :
+{
+    "hash": "e8f28f42167b3e8f4233be80d8582e6fddd81afe7a5dcc215a180e85d0702307",
+    "height": 13,
+    "body": "awesome blockchain",
+    "time": "1540532168",
+    "previousBlockHash": "317d3e417fc0fa9c2574cdf4de30b06c3ea98397c857a79bd2af3c5624550ea1"
+}
+```
+

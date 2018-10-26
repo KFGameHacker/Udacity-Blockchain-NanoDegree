@@ -1,5 +1,5 @@
 const SHA256 = require('crypto-js/sha256');
-const BlockClass = require('./Block.js');
+const Block = require('./Block.js').Block;
 const SimpleChain = require('./simpleChain.js').SimpleChain;
 
 //Controller Definition to encapsulate routes to work with the blockchain
@@ -17,18 +17,23 @@ class BlockConctroller{
         this.app.get('/api/block/:index',(req,res)=>{
             let index = req.params.index;
             this.blockchain.getBlock(index).then(blockStr=>{
-                res.send(blockStr);
+                if(blockStr!=null){
+                    res.setHeader('Content-Type','text/json');
+                    res.send(blockStr);
+                }else{
+                    res.send("not found.");
+                }
             });
         });
     }
 
-    //add a Block to chian through API
+    //add a Block to chain through API
     postNewBlock(){
         this.app.post('/api/block',(req,res)=>{
-            let data = req.body.data.toString();
-            let newBlock = new BlockClass.Block(data);
+            let req_data = req.body.info.toString();
+            let newBlock = new Block(req_data);
             this.blockchain.addBlock(newBlock).then(result=>{
-                res.setHeader('Content-Type','text/plain');
+                res.setHeader('Content-Type','text/json');
                 res.write('you posted:\n');
                 res.end(JSON.stringify(newBlock).toString());
             });
