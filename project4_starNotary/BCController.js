@@ -45,10 +45,13 @@ class BlockConctroller{
     //request validation
     postRequestValidation(){
         this.app.post('/requestValidation',(req,res)=>{
-            let address = req.body.address.toString();
-            let result = this.mempool.addRequestValidation(req);
-            res.setHeader('Content-Type','text/json');
-            res.end(JSON.stringify(result).toString());
+            this.mempool.addRequestValidation(req).then(result=>{
+                //console.log(result);
+                res.setHeader('Content-Type','text/json');
+                res.end(result);
+            }).catch(error=>{
+                console.log(error);
+            });
         })
     }
 
