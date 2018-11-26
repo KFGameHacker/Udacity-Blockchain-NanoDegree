@@ -1,6 +1,6 @@
 //build a mempool to store middle process validation data
 
-const VALID_DURATION_MS = 300000;
+const TimeoutRequestsWindowTime = 5*60*1000;
 
 class Mempool{
     
@@ -18,6 +18,8 @@ class Mempool{
             let address = request.body.address.toString();
             this.searchMempoolByAddress(address).then(result=>{
                 if(result=='not found'){
+
+                    //build the requestObejct structure
                     let requestTimeStamp = new Date().getTime().toString().slice(0, -3);
                     let message = `${address}:${requestTimeStamp}:starRegistry`;
                     let validationWindow = 300;
@@ -29,7 +31,9 @@ class Mempool{
                     }
                     let reqStr = JSON.stringify(requestObject).toString();
                     this.mempool.push(reqStr);
+                    this.setTimeOut(requestObject,validationWindow);
                     //this.showMempool();
+                    //this.showtTimeoutRequests();
                     resolve(reqStr);
                 }
                 else if(result){
@@ -69,16 +73,32 @@ class Mempool{
         console.log('================ mempool tail =========');
     }
 
+    //loop the timeoutRequests array and display it
+    showtTimeoutRequests(){
+        console.log('================ timeout request pool head =========');
+        this.timeoutRequests.forEach((item=>{
+            console.log(item);
+        }))
+        console.log('================ timeout request pool tail =========');
+    }
+
     //set a timer to calc the timeout request
     setTimeOut(request,TimeoutRequestsWindowTime){
         this.timeoutRequests[request.walletAddress]=setTimeout(function(){
-            this.removeValidationRequest(request.walletAddress)},TimeoutRequestsWindowTime
-        );
+            console.log('timeOutttt!!');
+            this.removeValidationRequest(request.walletAddress)},TimeoutRequestsWindowTime);
     }
 
     //move expired request from mempool to timeoutRequests array
-    removeValidationRequest(WalletAddress){
-
+    removeValidationRequest(walletAddress){
+        this.searchMempoolByAddress(walletAddress).then(result=>{
+            let resultStr = JSON.stringify(result).toString();
+            let resultIndex = this.mempool.indexOf(resultStr);
+            //move timedOut request from mempool to timeoutRequests array
+            this.timeoutRequests.push(this.mempool.splice(resultIndex,1));
+        }).catch(error=>{
+            console.log(error);
+        });
     }
 
     //Get the "now" UTC timestamp.
