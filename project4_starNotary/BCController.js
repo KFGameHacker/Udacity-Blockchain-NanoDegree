@@ -1,4 +1,3 @@
-const SHA256 = require('crypto-js/sha256');
 const Block = require('./Block.js').Block;
 const SimpleChain = require('./simpleChain.js').SimpleChain;
 const Mempool = require('./Mempool').Mempool;
@@ -48,7 +47,6 @@ class BlockConctroller{
         this.app.post('/requestValidation',(req,res)=>{
             let address = req.body.address.toString();
             let result = this.mempool.addRequestValidation(req);
-            console.log(result);
             res.setHeader('Content-Type','text/json');
             res.end(JSON.stringify(result).toString());
         })
