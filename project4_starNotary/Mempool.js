@@ -38,7 +38,9 @@ class Mempool{
                         "validationWindow": validationWindow,
                         "timeLeft":validationWindow
                     }
-                    let reqStr = JSON.stringify(requestObject).toString();
+                    let requestObject2Store = requestObject;
+                    delete requestObject2Store.timeLeft;
+                    let reqStr = JSON.stringify(requestObject2Store).toString();
                     this.mempool.push(reqStr);
 
                     //set a internal timer to remove the address from mempool after 5 minutes
@@ -46,7 +48,7 @@ class Mempool{
                         this.removeValidationRequest(address);
                     },TimeoutRequestsWindowTime*1000);
 
-                    resolve(reqStr);
+                    resolve(JSON.stringify(requestObject).toString());
                 }
                 //if in mempool
                 else if(result){
@@ -94,7 +96,6 @@ class Mempool{
                     let isValid = bitcoinMessage.verify(result.message,address,signature);
 
                     result.messageSignature = isValid;
-                    delete result.timeLeft;
                     validReqObj = {
                         registerStar : true,
                         status : result,
