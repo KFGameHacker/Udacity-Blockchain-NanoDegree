@@ -53,11 +53,120 @@ The sever will run on http://localhost:8000/
 ### Endpoints
 Below is an instruction of how to use Postman to test the endpoints:
 #### GET
-1. Get a block by height
-
+### 1. Get a block by height
+ - Endpoint:
+ ```
+ /block/:index
+ ```
+ - Example:
+ ```
+ localhost:8000/block/4
+ ```
+### 2. Get a block by Hash
+ - Endpoint:
+ ```
+ /stars/:hash
+ ```
+ - Example: 
+ ```
+ localhost:8000/stars/hash/localhost:8000/stars/hash/0a29018e...fac43f
+ ```
+### 3. Get a block by Address
+ - Endpoint:
+ ```
+ /stars/:address
+ ```
+ - Example: 
+ ```
+ localhost:8000/stars/address/1KGex1mosL5gJhvghUScrBq8LqA37fs6gd
+ ```
+#### POST
+### 1. Post a Notary Request
+ - Endpoint:
+ ```
+ /requestvalidation
+ ```
+ - Post Body:
+ ```
+ {
+	"address":"1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb"
+ }
+ ```
+ - Response:
+ ```
+ {
+    "walletAddress": "1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb",
+    "requestTimeStamp": "1543419946",
+    "message": "1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb:1543419946:starRegistry",
+    "validationWindow": 300
+}
+ ```
+### 2. Post a Signature to validate
+ - Endpoint:
+ ```
+ /message-signature/validate
+ ```
+ - Post Body:
+ ```
+{
+	"address":"1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb",
+	"signature":"H7WQPQyQ3/RlbsLnN9Mbv7ih/VkTzwk9MQ3SPcJKQ6NzHoQPCcSkjn7rv8cTkhtd8Qgo3FPuWoPc9LMjiQEkIsM="
+}
+ ```
+ - Response:
+ ```
+{
+    "registerStar": true,
+    "status": {
+        "walletAddress": "1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb",
+        "requestTimeStamp": "1543419946",
+        "message": "1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb:1543419946:starRegistry",
+        "validationWindow": 300,
+        "messageSignature": true
+    }
+}
+ ```
+### 3. Post star data to notary
+- Endpoint:
+ ```
+/postStar
+ ```
+ - Post Body:
+ ```
+{
+	"address": "1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb",
+    "star": {
+            "dec": "68° 52' 56.9",
+            "ra": "16h 29m 1.0s",
+            "mag":"4.83",
+            "cen":"Centaurus",
+            "story": "Found star using https://www.google.com/sky/"
+        }
+}
+ ```
+ - Response:
+ ```
+{
+    "hash": "8c1cf853ebac0b20be3fb64a506e45a554367a1710837be84677465a376fc746",
+    "height": 3,
+    "body": {
+        "address": "1LDeUW2itkQsh5uCp1PcMtPNAaJbmS6Bzb",
+        "star": {
+            "ra": "16h 29m 1.0s",
+            "dec": "68° 52' 56.9",
+            "mag": "4.83",
+            "cen": "Centaurus",
+            "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+            "storyDecoded": "Found star using https://www.google.com/sky/"
+        }
+    },
+    "time": "1543419976",
+    "previousBlockHash": "95362592800054e687ab9715319048061d4dce240efaecee7e3698cc7e00620f"
+}
+ ```
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License.
 
 ## Acknowledgments
 * Udacity Blockchain Nanodegree Program facilitators and mentors
