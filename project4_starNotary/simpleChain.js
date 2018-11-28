@@ -161,6 +161,11 @@ class SimpleChain{
   getBlockByHash(hash) {
     return this.chainDB.getDataByHash(hash);
   }
+
+  // Get block by address
+  getBlockByAddress(address) {
+    return this.chainDB.getDataByAddress(address);
+  }
 }
 
 //Test Case

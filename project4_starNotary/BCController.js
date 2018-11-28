@@ -13,6 +13,7 @@ class BlockConctroller{
         //reg end points.
         this.getBlockByIndex();
         this.getBlockByHash();
+        this.getBlockByAddress();
 
         this.postNewBlock();
         this.postRequestValidation();
@@ -52,6 +53,31 @@ class BlockConctroller{
             }
 
             this.blockchain.getBlockByHash(hash).then(block=>{
+                 //if not genesis block,decode the star story
+                if(block.height!=0){
+                    block.body.star.storyDecoded = hex2ascii(block.body.star.story);
+                }
+
+                res.setHeader('Content-Type','text/json');
+                res.send(JSON.stringify(block).toString());
+            }).catch(error=>{
+                res.end(error.toString());
+            });
+        })
+    };
+
+    //get Block By Index through API
+    getBlockByAddress(){
+        this.app.get('/stars/address/:address',(req,res)=>{
+            let address = req.params.address;
+
+            //check user post hash is valid
+            if(address.length!=34){
+                res.end('Your address is wrong.please check.');
+            }
+            console.log(address.length);
+
+            this.blockchain.getBlockByAddress(address).then(block=>{
                  //if not genesis block,decode the star story
                 if(block.height!=0){
                     block.body.star.storyDecoded = hex2ascii(block.body.star.story);
@@ -127,8 +153,13 @@ class BlockConctroller{
                 let isStoryASCII = /^[\x00-\x7F]*$/.test(story);
 
                 //check user post story
-                if(isStoryTooLong||isStoryTooLong){
+                if(isStoryTooLong){
                     res.end('Your star story is wrong.please check.');
+                }
+
+                //check user post story
+                if(!isStoryASCII){
+                    res.end('Your star story is not ASCII.please check.');
                 }
 
                 //check user post star parameter

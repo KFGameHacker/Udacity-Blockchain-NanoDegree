@@ -92,6 +92,28 @@ class LevelDBHandler {
             });
         });
     }
+
+    // Get block by address
+    getDataByAddress(address) {
+        let block = null;
+        let self = this;
+        return new Promise(function(resolve, reject){
+            self.db.createReadStream()
+            .on('data', dataStr=>{
+                let data = JSON.parse(dataStr.value);
+                //console.log(data);
+                if(data.body.address === address){
+                    block = data;
+                }
+            })
+            .on('error',err=>{
+                reject(err)
+            })
+            .on('close',()=>{
+                resolve(block);
+            });
+        });
+    }
 }
 
 // Export the class
