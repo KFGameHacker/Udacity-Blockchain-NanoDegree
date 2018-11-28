@@ -12,9 +12,9 @@ class BlockConctroller{
         this.getBlockByIndex();
         this.postNewBlock();
         this.postRequestValidation();
-        this.getTimeoutReqPool();
-        this.getMempool();
-        this.getValidPool();
+        // this.getTimeoutReqPool();
+        // this.getMempool();
+        // this.getValidPool();
         this.postUserSignature();
         this.postStar();
     }
@@ -99,27 +99,57 @@ class BlockConctroller{
     //user post star data
     postStar(){
         this.app.post('/postStar',(req,res)=>{
-            // let body = {
-            //     address: req.body.address,
-            //     star: {
-            //           ra: RA,
-            //           dec: DEC,
-            //           mag: MAG,
-            //           cen: CEN,
-            //           story: Buffer(starStory).toString('hex')
-            //           }
-            //     }
-            //check user request address is in the valid mempool
-            this.mempool.searchPoolByAddress(this.mempool.mempoolValid,req.body.address).then(result=>{
-                if(result=='not found'){
-                    res.end(req.body.address+' not in valid mempool.');
-                }else if(result){
-                    res.setHeader('Content-Type','text/json');
-                    res.end("hey");
+
+            //check user post is null?
+            if(!req.body){
+                res.status(400).json({
+                    success: false,
+                    message: "Please check your request, which might be empty, undefined, or in a wrong format."
+                  })
+            }else{
+                let address = req.body.address;
+                let RA = req.body.star.ra;
+                let DEC = req.body.star.dec;
+                let MAG = req.body.star.mag;
+                let CEN = req.body.star.cen;
+                let story = req.body.star.story;
+
+                let isStoryTooLong = story.length>500?true:false;
+                let isStoryASCII = /^[\x00-\x7F]*$/.test(story);
+
+                //check user post story
+                if(isStoryTooLong||isStoryTooLong){
+                    res.end('Your star story is wrong.please check.');
                 }
-            }).catch(error=>{
-                res.end(error);
-            });
+
+                //check user post star parameter
+                if(!RA||!DEC||!MAG||!CEN){
+                    res.end('Your star parameter is wrong.please check.');
+                }
+
+                let body = {
+                    address: address,
+                    star: {
+                        ra: RA,
+                        dec: DEC,
+                        mag: MAG,
+                        cen: CEN,
+                        story: Buffer.from(story,'ascii').toString('hex')
+                        }
+                }
+                res.end(JSON.stringify(body).toString());
+                //check user request address is in the valid mempool
+                this.mempool.searchPoolByAddress(this.mempool.mempoolValid,req.body.address).then(result=>{
+                    if(result=='not found'){
+                        res.end(req.body.address+' not in valid mempool.');
+                    }else if(result){
+                        res.setHeader('Content-Type','text/json');
+                        res.end("hey");
+                    }
+                }).catch(error=>{
+                    res.end(error);
+                });
+                }
         });
     }
 }
