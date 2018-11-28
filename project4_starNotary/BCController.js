@@ -16,6 +16,7 @@ class BlockConctroller{
         this.getMempool();
         this.getValidPool();
         this.postUserSignature();
+        this.postStar();
     }
 
     //get Block By Index through API
@@ -93,6 +94,33 @@ class BlockConctroller{
                 res.end(error);
             });
         })
+    }
+
+    //user post star data
+    postStar(){
+        this.app.post('/postStar',(req,res)=>{
+            // let body = {
+            //     address: req.body.address,
+            //     star: {
+            //           ra: RA,
+            //           dec: DEC,
+            //           mag: MAG,
+            //           cen: CEN,
+            //           story: Buffer(starStory).toString('hex')
+            //           }
+            //     }
+            //check user request address is in the valid mempool
+            this.mempool.searchPoolByAddress(this.mempool.mempoolValid,req.body.address).then(result=>{
+                if(result=='not found'){
+                    res.end(req.body.address+' not in valid mempool.');
+                }else if(result){
+                    res.setHeader('Content-Type','text/json');
+                    res.end("hey");
+                }
+            }).catch(error=>{
+                res.end(error);
+            });
+        });
     }
 }
 
