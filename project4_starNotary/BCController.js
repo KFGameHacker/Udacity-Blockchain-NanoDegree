@@ -107,6 +107,8 @@ class BlockConctroller{
                     message: "Please check your request, which might be empty, undefined, or in a wrong format."
                   })
             }else{
+
+                //assign value
                 let address = req.body.address;
                 let RA = req.body.star.ra;
                 let DEC = req.body.star.dec;
@@ -137,14 +139,18 @@ class BlockConctroller{
                         story: Buffer.from(story,'ascii').toString('hex')
                         }
                 }
-                res.end(JSON.stringify(body).toString());
+                //res.end(JSON.stringify(body).toString());
                 //check user request address is in the valid mempool
                 this.mempool.searchPoolByAddress(this.mempool.mempoolValid,req.body.address).then(result=>{
                     if(result=='not found'){
                         res.end(req.body.address+' not in valid mempool.');
                     }else if(result){
-                        res.setHeader('Content-Type','text/json');
-                        res.end("hey");
+                        let newBlock = new Block(body);
+                        this.blockchain.addBlock(newBlock).then(result=>{
+                            res.setHeader('Content-Type','text/json');
+                            res.write('you posted:\n');
+                            res.end(JSON.stringify(newBlock).toString());
+                        });
                     }
                 }).catch(error=>{
                     res.end(error);
