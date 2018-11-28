@@ -14,6 +14,8 @@ class BlockConctroller{
         this.postRequestValidation();
         this.getTimeoutReqPool();
         this.getMempool();
+        this.getValidPool();
+        this.postUserSignature();
     }
 
     //get Block By Index through API
@@ -60,7 +62,7 @@ class BlockConctroller{
     //query the Timeout request pool for debug
     getTimeoutReqPool(){
         this.app.post('/getTimeoutRequests',(req,res)=>{
-            this.mempool.showtTimeoutRequests();
+            this.mempool.showPool(this.mempool.timeoutRequests);
             res.end("hello");
         });
     }
@@ -68,15 +70,28 @@ class BlockConctroller{
     //query the mempool for debug
     getMempool(){
         this.app.post('/getMempool',(req,res)=>{
-            this.mempool.showMempool();
+            this.mempool.showPool(this.mempool.mempool);
+            res.end("hello");
+        });
+    }
+
+    //query the valid mempool for debug
+    getValidPool(){
+        this.app.post('/getValidPool',(req,res)=>{
+            this.mempool.showPool(this.mempool.mempoolValid);
             res.end("hello");
         });
     }
 
     //request validation
-    postSignature(){
+    postUserSignature(){
         this.app.post('/message-signature/validate',(req,res)=>{
-            
+            this.mempool.validateRequestByWallet(req).then(result=>{
+                res.setHeader('Content-Type','text/json');
+                res.end(result.toString());
+            }).catch(error=>{
+                res.end(error);
+            });
         })
     }
 }

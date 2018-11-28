@@ -1,3 +1,4 @@
+const bitcoinMessage = require('bitcoinjs-message');
 //build a mempool to store middle process validation data
 
 const TimeoutRequestsWindowTime = 5*60;
@@ -10,6 +11,8 @@ class Mempool{
         this.mempool = [];
         //init the timeoutRequests pool with array
         this.timeoutRequests = [];
+        //valid mempool array
+        this.mempoolValid = [];
     }
 
     //add user request to the mempool array
@@ -17,8 +20,9 @@ class Mempool{
         return new Promise((resolve,reject)=>{
             let address = request.body.address.toString();       
             let requestTimeStamp,message,validationWindow,requestObject;
+
             //check if request is in the mempool already
-            this.searchMempoolByAddress(address).then(result=>{
+            this.searchPoolByAddress(this.mempool,address).then(result=>{
 
                 //if not in mempool
                 if(result=='not found'){
@@ -64,17 +68,49 @@ class Mempool{
                     //this.showMempool();
                 }
             }).catch(error=>{
-                console.log('error:'+error);
+                reject('error:'+error);
             });
         });
     }
 
-    //search the mempool by wallet address
-    searchMempoolByAddress(address){
+    //validate the user signature
+    validateRequestByWallet(request){
+        return new Promise((resolve,reject)=>{
+            let address = request.body.address.toString();
+            let signature = request.body.signature.toString();
+            //console.log(`${address}:${signature}`);
+
+            //check user request address is in the mempool
+            this.searchPoolByAddress(this.mempool,address).then(result=>{
+
+                //if not in the mempool
+                if(result=='not found'){
+                    reject('not found in the mempool.');
+                }
+                //if in the mempool
+                else if(result){
+
+                //validate the user post signatue
+                let isValid = bitcoinMessage.verify(result.message,address,signature);
+
+                if(isValid){
+                    //if it's valid,we archive it to valid pool
+                    this.archiveValidRequest(address);
+                }
+                resolve(isValid);
+                }
+            }).catch(error=>{
+                reject('error:'+error);
+            });
+        });
+    }
+
+     //search the mempool by wallet address
+     searchPoolByAddress(pool,address){
         return new Promise((resolve,reject)=>{
             
             //search the mempool by loop
-            this.mempool.forEach((itemStr=>{
+            pool.forEach((itemStr=>{
 
                 //parse str to json object
                 let item = JSON.parse(itemStr);
@@ -87,19 +123,10 @@ class Mempool{
         });
     }
 
-    //loop the mempool and display it
-    showMempool(){
-        console.log('================ mempool head ================');
-        this.mempool.forEach((item=>{
-            console.log(item);
-        }))
-        console.log('================================================');
-    }
-
-    //loop the timeoutRequests array and display it
-    showtTimeoutRequests(){
-        console.log('================ timeout request pool head =========');
-        this.timeoutRequests.forEach((item=>{
+    //query the specific request pool
+    showPool(pool){
+        console.log('================ pool head =========================');
+        pool.forEach((item=>{
             console.log(item);
         }))
         console.log('====================================================');
@@ -107,11 +134,23 @@ class Mempool{
 
     //move expired request from mempool to timeoutRequests array
     removeValidationRequest(walletAddress){
-        this.searchMempoolByAddress(walletAddress).then(result=>{
+        this.searchPoolByAddress(this.mempool,walletAddress).then(result=>{
             let resultStr = JSON.stringify(result).toString();
             let resultIndex = this.mempool.indexOf(resultStr);
             //move timedOut request from mempool to timeoutRequests array
             this.timeoutRequests.push(this.mempool.splice(resultIndex,1));
+        }).catch(error=>{
+            console.log(error);
+        });
+    }
+
+    //move valid requests from mempool to valid pool.
+    archiveValidRequest(walletAddress){
+        this.searchPoolByAddress(this.mempool,walletAddress).then(result=>{
+            let resultStr = JSON.stringify(result).toString();
+            let resultIndex = this.mempool.indexOf(resultStr);
+            //move timedOut request from mempool to timeoutRequests array
+            this.mempoolValid.push(this.mempool.splice(resultIndex,1));
         }).catch(error=>{
             console.log(error);
         });
