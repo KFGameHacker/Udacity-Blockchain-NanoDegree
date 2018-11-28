@@ -15,7 +15,6 @@ class BlockConctroller{
         this.getBlockByHash();
         this.getBlockByAddress();
 
-        this.postNewBlock();
         this.postRequestValidation();
         this.postUserSignature();
         this.postStar();
@@ -90,19 +89,6 @@ class BlockConctroller{
             });
         })
     };
-
-    //add a Block to chain through API
-    postNewBlock(){
-        this.app.post('/api/block',(req,res)=>{
-            let req_data = req.body.info.toString();
-            let newBlock = new Block(req_data);
-            this.blockchain.addBlock(newBlock).then(result=>{
-                res.setHeader('Content-Type','text/json');
-                res.write('you posted:\n');
-                res.end(JSON.stringify(newBlock).toString());
-            });
-        })
-    }
 
     //request validation
     postRequestValidation(){
