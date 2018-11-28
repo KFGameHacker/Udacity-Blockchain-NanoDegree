@@ -1,6 +1,7 @@
 const Block = require('./Block.js').Block;
 const SimpleChain = require('./simpleChain.js').SimpleChain;
 const Mempool = require('./Mempool').Mempool;
+const hex2ascii = require('hex2ascii');
 
 //Controller Definition to encapsulate routes to work with the blockchain
 class BlockConctroller{
@@ -9,12 +10,10 @@ class BlockConctroller{
         this.app = app;
         this.blockchain = new SimpleChain();
         this.mempool = new Mempool();
+        //reg end points.
         this.getBlockByIndex();
         this.postNewBlock();
         this.postRequestValidation();
-        // this.getTimeoutReqPool();
-        // this.getMempool();
-        // this.getValidPool();
         this.postUserSignature();
         this.postStar();
     }
@@ -25,8 +24,12 @@ class BlockConctroller{
             let index = req.params.index;
             this.blockchain.getBlock(index).then(blockStr=>{
                 if(blockStr!=null){
+                    let Block = JSON.parse(blockStr);
+                    if(index!=0){
+                        Block.body.star.storyDecoded = hex2ascii(Block.body.star.story);
+                    }
                     res.setHeader('Content-Type','text/json');
-                    res.send(blockStr);
+                    res.send(JSON.stringify(Block).toString());
                 }else{
                     res.send("not found.");
                 }
@@ -58,30 +61,6 @@ class BlockConctroller{
                 console.log(error);
             });
         })
-    }
-
-    //query the Timeout request pool for debug
-    getTimeoutReqPool(){
-        this.app.post('/getTimeoutRequests',(req,res)=>{
-            this.mempool.showPool(this.mempool.timeoutRequests);
-            res.end("hello");
-        });
-    }
-
-    //query the mempool for debug
-    getMempool(){
-        this.app.post('/getMempool',(req,res)=>{
-            this.mempool.showPool(this.mempool.mempool);
-            res.end("hello");
-        });
-    }
-
-    //query the valid mempool for debug
-    getValidPool(){
-        this.app.post('/getValidPool',(req,res)=>{
-            this.mempool.showPool(this.mempool.mempoolValid);
-            res.end("hello");
-        });
     }
 
     //request validation
@@ -148,7 +127,7 @@ class BlockConctroller{
                         let newBlock = new Block(body);
                         this.blockchain.addBlock(newBlock).then(result=>{
                             res.setHeader('Content-Type','text/json');
-                            res.write('you posted:\n');
+                            newBlock.body.star.storyDecoded = hex2ascii(newBlock.body.star.story);
                             res.end(JSON.stringify(newBlock).toString());
                         });
                     }
