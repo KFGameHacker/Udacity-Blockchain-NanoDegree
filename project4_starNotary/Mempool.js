@@ -31,12 +31,17 @@ class Mempool{
                         "walletAddress": address,
                         "requestTimeStamp": requestTimeStamp,
                         "message": message,
-                        "validationWindow": validationWindow
+                        "validationWindow": validationWindow,
+                        "timeLeft":validationWindow
                     }
                     let reqStr = JSON.stringify(requestObject).toString();
                     this.mempool.push(reqStr);
-                    this.showMempool();
-                    this.showtTimeoutRequests();
+
+                    //set a internal timer to remove the address from mempool after 5 minutes
+                    setTimeout(()=>{
+                        this.removeValidationRequest(address);
+                    },TimeoutRequestsWindowTime*1000);
+
                     resolve(reqStr);
                 }
                 //if in mempool
@@ -84,11 +89,11 @@ class Mempool{
 
     //loop the mempool and display it
     showMempool(){
-        console.log('================ mempool head =========');
+        console.log('================ mempool head ================');
         this.mempool.forEach((item=>{
             console.log(item);
         }))
-        console.log('================ mempool tail =========');
+        console.log('================================================');
     }
 
     //loop the timeoutRequests array and display it
@@ -97,7 +102,7 @@ class Mempool{
         this.timeoutRequests.forEach((item=>{
             console.log(item);
         }))
-        console.log('================ timeout request pool tail =========');
+        console.log('====================================================');
     }
 
     //move expired request from mempool to timeoutRequests array

@@ -12,6 +12,8 @@ class BlockConctroller{
         this.getBlockByIndex();
         this.postNewBlock();
         this.postRequestValidation();
+        this.getTimeoutReqPool();
+        this.getMempool();
     }
 
     //get Block By Index through API
@@ -53,6 +55,22 @@ class BlockConctroller{
                 console.log(error);
             });
         })
+    }
+
+    //query the Timeout request pool for debug
+    getTimeoutReqPool(){
+        this.app.post('/getTimeoutRequests',(req,res)=>{
+            this.mempool.showtTimeoutRequests();
+            res.end("hello");
+        });
+    }
+
+    //query the mempool for debug
+    getMempool(){
+        this.app.post('/getMempool',(req,res)=>{
+            this.mempool.showMempool();
+            res.end("hello");
+        });
     }
 
     //request validation
