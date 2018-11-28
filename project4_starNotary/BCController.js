@@ -12,6 +12,8 @@ class BlockConctroller{
         this.mempool = new Mempool();
         //reg end points.
         this.getBlockByIndex();
+        this.getBlockByHash();
+
         this.postNewBlock();
         this.postRequestValidation();
         this.postUserSignature();
@@ -20,11 +22,13 @@ class BlockConctroller{
 
     //get Block By Index through API
     getBlockByIndex(){
-        this.app.get('/api/block/:index',(req,res)=>{
+        this.app.get('/block/:index',(req,res)=>{
             let index = req.params.index;
             this.blockchain.getBlock(index).then(blockStr=>{
                 if(blockStr!=null){
                     let Block = JSON.parse(blockStr);
+
+                    //if not genesis block,decode the star story
                     if(index!=0){
                         Block.body.star.storyDecoded = hex2ascii(Block.body.star.story);
                     }
@@ -36,6 +40,30 @@ class BlockConctroller{
             });
         });
     }
+
+    //get Block By Index through API
+    getBlockByHash(){
+        this.app.get('/stars/hash/:hash',(req,res)=>{
+            let hash = req.params.hash;
+
+            //check user post hash is valid
+            if(hash.length!=64){
+                res.end('Your hash is wrong.please check.');
+            }
+
+            this.blockchain.getBlockByHash(hash).then(block=>{
+                 //if not genesis block,decode the star story
+                if(block.height!=0){
+                    block.body.star.storyDecoded = hex2ascii(block.body.star.story);
+                }
+
+                res.setHeader('Content-Type','text/json');
+                res.send(JSON.stringify(block).toString());
+            }).catch(error=>{
+                res.end(error.toString());
+            });
+        })
+    };
 
     //add a Block to chain through API
     postNewBlock(){
@@ -58,7 +86,7 @@ class BlockConctroller{
                 res.setHeader('Content-Type','text/json');
                 res.end(result);
             }).catch(error=>{
-                console.log(error);
+                res.end(error);
             });
         })
     }

@@ -156,6 +156,11 @@ class SimpleChain{
       });
     });
   }
+
+  // Get block by hash
+  getBlockByHash(hash) {
+    return this.chainDB.getDataByHash(hash);
+  }
 }
 
 //Test Case
