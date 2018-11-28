@@ -89,13 +89,11 @@ class Mempool{
                 }
                 //if in the mempool
                 else if(result){
-                let validReqObj;
-                //validate the user post signatue
-                let isValid = bitcoinMessage.verify(result.message,address,signature);
+                    let validReqObj;
+                    //validate the user post signatue
+                    let isValid = bitcoinMessage.verify(result.message,address,signature);
 
-                if(isValid){
-                    //if it's valid,we archive it to valid pool
-                    result.messageSignature = 'valid';
+                    result.messageSignature = isValid;
                     delete result.timeLeft;
                     validReqObj = {
                         registerStar : true,
@@ -104,10 +102,8 @@ class Mempool{
                     this.archiveValidRequest(address);
                     resolve(JSON.stringify(validReqObj).toString());
                 }
-                resolve(isValid);
-                }
             }).catch(error=>{
-                reject('error:'+error);
+                reject('valid error:'+error);
             });
         });
     }
