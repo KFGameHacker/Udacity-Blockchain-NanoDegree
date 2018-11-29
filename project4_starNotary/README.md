@@ -69,7 +69,7 @@ Below is an instruction of how to use Postman to test the endpoints:
  ```
  - Example: 
  ```
- localhost:8000/stars/localhost:8000/stars/hash/0a29018e...fac43f
+ localhost:8000/stars/localhost:8000/stars/0a29018e...fac43f
  ```
 ### 3. Get a block by Address
  - Endpoint:
