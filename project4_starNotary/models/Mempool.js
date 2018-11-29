@@ -45,7 +45,7 @@ class Mempool{
 
                     //set a internal timer to remove the address from mempool after 5 minutes
                     setTimeout(()=>{
-                        this.removeValidationRequest(address);
+                        this.moveElementFromPoolA2PoolB(this.mempool,this.timeoutRequests,address);
                     },TimeoutRequestsWindowTime*1000);
 
                     resolve(JSON.stringify(requestObject).toString());
@@ -60,7 +60,7 @@ class Mempool{
 
                     //if user request expired,remove it from the mempool
                     if(timeLeft<=0){
-                        this.removeValidationRequest(address);
+                        this.moveElementFromPoolA2PoolB(this.mempool,this.timeoutRequests,address);
                         result.expired = 'true';
                         resolve(JSON.stringify(result).toString());
                     }else{
@@ -100,7 +100,7 @@ class Mempool{
                         registerStar : true,
                         status : result,
                     }
-                    this.archiveValidRequest(address);
+                    this.moveElementFromPoolA2PoolB(this.mempool,this.mempoolValid,address);
                     resolve(JSON.stringify(validReqObj).toString());
                 }
             }).catch(error=>{
@@ -136,25 +136,25 @@ class Mempool{
         console.log('====================================================');
     }
 
-    //move expired request from mempool to timeoutRequests array
-    removeValidationRequest(walletAddress){
-        this.searchPoolByAddress(this.mempool,walletAddress).then(result=>{
+    //move validated request from valid mempool
+    moveElementFromPoolA2PoolB(poolA,poolB,walletAddress){
+        this.searchPoolByAddress(poolA,walletAddress).then(result=>{
             let resultStr = JSON.stringify(result).toString();
-            let resultIndex = this.mempool.indexOf(resultStr);
+            let resultIndex = poolA.indexOf(resultStr);
             //move timedOut request from mempool to timeoutRequests array
-            this.timeoutRequests.push(this.mempool.splice(resultIndex,1));
+            poolB.push(poolA.splice(resultIndex,1));
         }).catch(error=>{
             console.log(error);
         });
     }
 
-    //move valid requests from mempool to valid pool.
-    archiveValidRequest(walletAddress){
-        this.searchPoolByAddress(this.mempool,walletAddress).then(result=>{
+    //move validated request from valid mempool
+    removeElementFromPool(pool,walletAddress){
+        this.searchPoolByAddress(pool,walletAddress).then(result=>{
             let resultStr = JSON.stringify(result).toString();
-            let resultIndex = this.mempool.indexOf(resultStr);
+            let resultIndex = pool.indexOf(resultStr);
             //move timedOut request from mempool to timeoutRequests array
-            this.mempoolValid.push(this.mempool.splice(resultIndex,1));
+            pool.splice(resultIndex,1);
         }).catch(error=>{
             console.log(error);
         });

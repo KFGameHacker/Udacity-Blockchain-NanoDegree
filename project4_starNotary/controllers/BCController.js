@@ -173,6 +173,8 @@ class BlockConctroller{
                         this.blockchain.addBlock(newBlock).then(result=>{
                             res.setHeader('Content-Type','text/json');
                             newBlock.body.star.storyDecoded = hex2ascii(newBlock.body.star.story);
+                            //remove user valid request after post star data.
+                            this.mempool.removeElementFromPool(this.mempool.mempoolValid,address);
                             res.end(JSON.stringify(newBlock).toString());
                         });
                     }
