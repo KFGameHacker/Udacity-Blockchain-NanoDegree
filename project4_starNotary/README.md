@@ -69,7 +69,7 @@ Below is an instruction of how to use Postman to test the endpoints:
  ```
  - Example: 
  ```
- localhost:8000/stars/hash/localhost:8000/stars/hash/0a29018e...fac43f
+ localhost:8000/stars/localhost:8000/stars/hash/0a29018e...fac43f
  ```
 ### 3. Get a block by Address
  - Endpoint:
@@ -78,7 +78,7 @@ Below is an instruction of how to use Postman to test the endpoints:
  ```
  - Example: 
  ```
- localhost:8000/stars/address/1KGex1mosL5gJhvghUScrBq8LqA37fs6gd
+ localhost:8000/stars/1KGex1mosL5gJhvghUScrBq8LqA37fs6gd
  ```
 #### POST
 ### 1. Post a Notary Request
