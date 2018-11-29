@@ -1,6 +1,6 @@
-const Block = require('./Block.js').Block;
-const SimpleChain = require('./simpleChain.js').SimpleChain;
-const Mempool = require('./Mempool').Mempool;
+const Block = require('../models/Block.js').Block;
+const SimpleChain = require('../models/simpleChain.js').SimpleChain;
+const Mempool = require('../models/Mempool').Mempool;
 const hex2ascii = require('hex2ascii');
 
 //Controller Definition to encapsulate routes to work with the blockchain
