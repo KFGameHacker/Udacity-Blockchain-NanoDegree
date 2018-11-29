@@ -43,7 +43,7 @@ class BlockConctroller{
 
     //get Block By Index through API
     getBlockByHash(){
-        this.app.get('/stars/hash/:hash',(req,res)=>{
+        this.app.get('/stars/:hash',(req,res)=>{
             let hash = req.params.hash;
 
             //check user post hash is valid
@@ -67,7 +67,7 @@ class BlockConctroller{
 
     //get Block By Index through API
     getBlockByAddress(){
-        this.app.get('/stars/address/:address',(req,res)=>{
+        this.app.get('/stars/:address',(req,res)=>{
             let address = req.params.address;
 
             //check user post hash is valid
