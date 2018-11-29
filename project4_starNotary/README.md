@@ -129,7 +129,7 @@ Below is an instruction of how to use Postman to test the endpoints:
 ### 3. Post star data to notary
 - Endpoint:
  ```
-/postStar
+/block
  ```
  - Post Body:
  ```

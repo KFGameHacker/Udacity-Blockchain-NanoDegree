@@ -160,6 +160,20 @@ class Mempool{
         });
     }
 
+    //move validated request from valid mempool
+    removeElementFromPool(pool,walletAddress){
+        return new Promise((resolve,reject)=>{
+            this.searchPoolByAddress(pool,walletAddress).then(result=>{
+                let resultStr = JSON.stringify(result).toString();
+                let resultIndex = pool.indexOf(resultStr);
+                //move timedOut request from mempool to timeoutRequests array
+                resolve(pool.splice(resultIndex,1));
+            }).catch(error=>{
+                console.log(error);
+            });
+        });
+    }
+
     //Get the "now" UTC timestamp.
     getNowTimestamp() {
     return new Date().getTime().toString().slice(0,-3);

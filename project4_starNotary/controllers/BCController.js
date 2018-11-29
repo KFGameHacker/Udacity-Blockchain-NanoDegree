@@ -43,14 +43,13 @@ class BlockConctroller{
 
     //get Block By Index through API
     getBlockByHash(){
-        this.app.get('/stars/:hash',(req,res)=>{
+        this.app.get('/stars/hash::hash',(req,res)=>{
             let hash = req.params.hash;
 
             //check user post hash is valid
             if(hash.length!=64){
                 res.end('Your hash is wrong.please check.');
             }
-
             this.blockchain.getBlockByHash(hash).then(block=>{
                  //if not genesis block,decode the star story
                 if(block.height!=0){
@@ -67,14 +66,12 @@ class BlockConctroller{
 
     //get Block By Index through API
     getBlockByAddress(){
-        this.app.get('/stars/:address',(req,res)=>{
+        this.app.get('/stars/address::address',(req,res)=>{
             let address = req.params.address;
-
             //check user post hash is valid
             if(address.length!=34){
                 res.end('Your address is wrong.please check.');
             }
-            console.log(address.length);
 
             this.blockchain.getBlockByAddress(address).then(block=>{
                  //if not genesis block,decode the star story
@@ -117,7 +114,7 @@ class BlockConctroller{
 
     //user post star data
     postStar(){
-        this.app.post('/postStar',(req,res)=>{
+        this.app.post('/block',(req,res)=>{
 
             //check user post is null?
             if(!req.body){
@@ -149,7 +146,7 @@ class BlockConctroller{
                 }
 
                 //check user post star parameter
-                if(!RA||!DEC||!MAG||!CEN){
+                if(!RA||!DEC){
                     res.end('Your star parameter is wrong.please check.');
                 }
 
@@ -169,13 +166,19 @@ class BlockConctroller{
                     if(result=='not found'){
                         res.end(req.body.address+' not in valid mempool.');
                     }else if(result){
-                        let newBlock = new Block(body);
-                        this.blockchain.addBlock(newBlock).then(result=>{
-                            res.setHeader('Content-Type','text/json');
-                            newBlock.body.star.storyDecoded = hex2ascii(newBlock.body.star.story);
-                            //remove user valid request after post star data.
-                            this.mempool.removeElementFromPool(this.mempool.mempoolValid,address);
-                            res.end(JSON.stringify(newBlock).toString());
+                        //remove user valid request after post star data.
+                        this.mempool.removeElementFromPool(this.mempool.mempoolValid,address).then(result=>{
+
+                        //if remove success
+                        if(result){
+                            let newBlock = new Block(body);
+                            this.blockchain.addBlock(newBlock).then(result=>{
+                                res.setHeader('Content-Type','text/json');
+                                newBlock.body.star.storyDecoded = hex2ascii(newBlock.body.star.story);
+                                
+                                res.end(JSON.stringify(newBlock).toString());
+                        });
+                    }
                         });
                     }
                 }).catch(error=>{
