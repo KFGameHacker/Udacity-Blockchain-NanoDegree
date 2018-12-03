@@ -1,16 +1,7 @@
-/*
- * NB: since truffle-hdwallet-provider 0.0.5 you must wrap HDWallet providers in a 
- * function when declaring them. Failure to do so will cause commands to hang. ex:
- * ```
- * mainnet: {
- *     provider: function() { 
- *       return new HDWalletProvider(mnemonic, 'https://mainnet.infura.io/<infura-key>') 
- *     },
- *     network_id: '1',
- *     gas: 4500000,
- *     gasPrice: 10000000000,
- *   },
- */
+const HDWalletProvider = require('truffle-hdwallet-provider');
+
+const mnemonic = 'angle admit list doll empower solar lawn follow cause equip alley beauty';
+const infura = 'https://rinkeby.infura.io/v3/10f4235e67174a6694e663d6460c37d2'
 
 module.exports = {
   networks: { 
