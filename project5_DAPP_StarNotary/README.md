@@ -2,6 +2,20 @@
 
 Build additional functionality with your smart contract and deploy it on the public testnet to create a DApp.
 
+## How to test it
+1.run 'truffle deploy --reset' to deploy the smart contract
+2.get the smart contract address and paste it to the right position of  'index.html'
+3.open index.html
+4.Claim your own star
+
+## Screensave
+
+1.claim star
+![](pics/claimStar.png)
+
+2.query star
+![](pics/queryStar.png)
+
 ## console output
 
 /home# truffle migrate --network rinkeby --reset --compile-all
