@@ -32,7 +32,7 @@
             }
             
             // The default (top) wallet account from a list of test accounts 
-            web3.eth.defaultAccount = '0xbb2Ae8f0c2079bb3a0e54bB05b9E59d12531C316'
+            web3.eth.defaultAccount = web3.eth.accounts[0]
 
             // The interface definition for your smart contract (the ABI) 
             var StarNotary = web3.eth.contract(
@@ -517,7 +517,7 @@
                     const dec = document.getElementById("dec").value
                     const mag = document.getElementById("mag").value
 
-                    starNotary.createStar.sendTransaction(name, story, ra, dec, mag, {from:account}, 
+                    starNotary.createStar.sendTransaction(name, story, ra, dec, mag, {from:account},{gas:3000000},
                         function (error, result){ 
                             if (!error){
                                 alert(result)
