@@ -501,7 +501,7 @@
 ]
             )
 
-            const starNotary = StarNotary.at('0x655b6701129f9bbf50369b93f745d9e732e0a1e3')
+            const starNotary = StarNotary.at('0xc072ec248ee9703f250e5968de5145eb5a6ca942')
             
             function claimButtonClicked() { 
                 web3.eth.getAccounts(function(error, accounts) { 
@@ -510,7 +510,7 @@
                         return
                     }
 
-                    const account = '0xbb2Ae8f0c2079bb3a0e54bB05b9E59d12531C316'
+                    const account = accounts[0]
                     const name = document.getElementById("name").value
                     const story = document.getElementById("story").value
                     const ra = document.getElementById("ra").value
