@@ -28,7 +28,7 @@
                 web3 = new Web3(web3.currentProvider) // what Metamask injected 
             } else {
                 // Instantiate and set Ganache as your provider
-                web3 = new Web3(new Web3.providers.HttpProvider("https://rinkeby.infura.io/v3/10f4235e67174a6694e663d6460c37d2"));
+                web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:7545"));
             }
             
             // The default (top) wallet account from a list of test accounts 
