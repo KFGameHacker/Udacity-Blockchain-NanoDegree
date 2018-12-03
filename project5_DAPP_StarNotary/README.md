@@ -44,12 +44,3 @@ Saving artifacts...
 
 ## star tokenId
 1
-
-## Udacity honor code
-
-Giving credits for places that helped me to do this project
-
-- Yury Prokashev, helped me on the slack channel to configure 2_deploy_contracts.js
-- https://walkingtree.tech/deploying-a-smart-contract-in-rinkeby-using-infura/
-- Udacity concepts section
-- Udacity Decentralized Star Notary Project at: https://study-hall.udacity.com/sg-562321-1911/rooms/community:nd1309:562321-cohort-1911-project-2297
